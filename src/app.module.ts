@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from './user/user.entity';
 import { LogService } from './log.service';
+import { LoggerMiddleware } from './logger.middleware';
 
 @Module({
   imports: [
@@ -29,5 +30,16 @@ import { LogService } from './log.service';
   providers: [LogService],
 })
 
-export class AppModule {}
+@Module({
+  imports: [],
+  controllers: [AppController],
+  providers: [AppService, LogService],
+})
 
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
+}
