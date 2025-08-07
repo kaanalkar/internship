@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './user/user.entity';
 import { LogService } from './log.service';
 import { CreateUserDto } from './user/create-user.dto';
+import { UpdateUserDto } from './user/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Users')
@@ -60,6 +61,9 @@ export class AppController {
   }
 
   @Put('id/:id')
+  @ApiOperation({ summary: 'Update an existing user' })
+  @ApiResponse({ status: 200, description: 'User updated successfully.' })
+  @ApiBody({ type: UpdateUserDto })
   async updateUserById(@Param('id') id: string, @Body() body: Partial<User>) {
     const user = await this.userRepository.findOne({ where: { id: parseInt(id) } });
     if (!user) return { message: 'User not found.' };
